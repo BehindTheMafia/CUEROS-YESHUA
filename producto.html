@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Producto | Cuero's Yeshua</title>
+    <meta name="description" content="Detalles del producto — Cuero's Yeshua, Masaya, Nicaragua.">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap"
+        rel="stylesheet">
+
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        leather: {
+                            50: '#F9F6F0',
+                            100: '#F2EBE1',
+                            300: '#D4B895',
+                            500: '#A67B5B',
+                            700: '#7A5230',
+                            900: '#4A3018',
+                            950: '#2B1C0E',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    },
+                    backgroundImage: {
+                        'leather-pattern': "url('assets/pattern.png')",
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style type="text/tailwindcss">
+        .glass-nav {
+            background: rgba(43, 28, 14, 0.9);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(166, 123, 91, 0.2);
+        }
+        .nav-item {
+            @apply px-4 py-2 rounded-full transition-all duration-300 hover:bg-white/10 hover:text-leather-300;
+        }
+        .thumb-btn {
+            @apply w-16 h-16 sm:w-20 sm:h-20 rounded-lg overflow-hidden border-2 border-transparent transition-all cursor-pointer hover:border-leather-300 flex-shrink-0;
+        }
+        .thumb-btn.active {
+            @apply border-leather-500 shadow-lg;
+        }
+
+        /* Zoom image — magnifier lens */
+        .zoom-wrapper {
+            position: relative;
+            cursor: crosshair;
+        }
+        .zoom-wrapper img {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        /* The magnifier lens circle */
+        .zoom-lens {
+            display: none;
+            position: absolute;
+            width: 250px;
+            height: 250px;
+            border: 3px solid rgba(166,123,91,0.8);
+            border-radius: 50%;
+            background-repeat: no-repeat;
+            background-color: white;
+            pointer-events: none;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.35), inset 0 0 0 1px rgba(255,255,255,0.3);
+            z-index: 20;
+            transform: translate(-50%, -50%);
+        }
+        .zoom-wrapper:hover .zoom-lens {
+            display: block;
+        }
+        /* Hide lens on touch devices */
+        @media (hover: none) {
+            .zoom-lens { display: none !important; }
+            .zoom-wrapper { cursor: zoom-in; }
+        }
+
+        /* Lightbox */
+        #lightbox {
+            animation: lbFadeIn 0.2s ease-out;
+        }
+        @keyframes lbFadeIn {
+            from { opacity: 0; }
+            to   { opacity: 1; }
+        }
+        #lightbox-img {
+            touch-action: pinch-zoom;
+            max-height: 90vh;
+            max-width: 95vw;
+            object-fit: contain;
+            border-radius: 12px;
+            box-shadow: 0 30px 80px rgba(0,0,0,0.5);
+            transition: transform 0.3s ease;
+        }
+    </style>
+</head>
+
+<body class="font-sans text-gray-800 bg-leather-50 antialiased selection:bg-leather-500 selection:text-white">
+
+    <!-- Navbar -->
+    <nav id="navbar" class="fixed w-full z-50 transition-all duration-300 glass-nav py-4 text-white">
+        <div class="container mx-auto px-6 md:px-12 flex justify-between items-center">
+            <a href="index.html"
+                class="font-serif text-2xl md:text-3xl font-bold tracking-wider flex items-center gap-2">
+                CUEROS <span class="text-leather-300">YESHUA</span>
+            </a>
+            <div class="hidden md:flex space-x-2 items-center font-medium">
+                <a href="index.html" class="nav-item">Inicio</a>
+                <a href="index.html#nosotros" class="nav-item">Nosotros</a>
+                <a href="catalogo.html" class="nav-item text-leather-300 bg-white/5">Catálogo</a>
+                <a href="index.html#contacto" class="nav-item">Contacto</a>
+            </div>
+            <button id="mobile-menu-btn"
+                class="md:hidden text-2xl focus:outline-none transition-transform duration-300 hover:scale-110 active:scale-95">
+                <i id="menu-icon" class="fa-solid fa-bars"></i>
+            </button>
+        </div>
+        <div id="mobile-menu"
+            class="hidden md:hidden absolute top-full left-0 w-full bg-leather-950/95 border-t border-leather-900 flex-col items-center py-8 space-y-6 shadow-2xl backdrop-blur-lg">
+            <a href="index.html" class="text-xl font-medium tracking-wide hover:text-leather-300 mobile-link transition-colors">Inicio</a>
+            <a href="index.html#nosotros" class="text-xl font-medium tracking-wide hover:text-leather-300 mobile-link transition-colors">Nosotros</a>
+            <a href="catalogo.html" class="text-xl font-medium tracking-wide text-leather-300 mobile-link transition-colors">Catálogo</a>
+            <a href="index.html#contacto" class="text-xl font-medium tracking-wide hover:text-leather-300 mobile-link transition-colors">Contacto</a>
+        </div>
+    </nav>
+
+    <!-- Breadcrumb -->
+    <div class="pt-24 pb-4 bg-leather-950">
+        <div class="container mx-auto px-6 md:px-12">
+            <nav class="flex items-center gap-2 text-sm text-leather-300/60">
+                <a href="index.html" class="hover:text-leather-300 transition-colors">Inicio</a>
+                <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                <a href="catalogo.html" class="hover:text-leather-300 transition-colors">Catálogo</a>
+                <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                <span id="breadcrumb-name" class="text-leather-100">Producto</span>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Product Detail Section -->
+    <section class="py-12 md:py-20 bg-white">
+        <div class="container mx-auto px-6 md:px-12">
+
+            <!-- Loading skeleton -->
+            <div id="product-skeleton"
+                class="flex flex-col lg:flex-row gap-12">
+                <div class="w-full lg:w-1/2">
+                    <div class="animate-pulse bg-gray-200 rounded-2xl aspect-square w-full"></div>
+                    <div class="flex gap-3 mt-4">
+                        <div class="animate-pulse bg-gray-200 w-20 h-20 rounded-lg"></div>
+                        <div class="animate-pulse bg-gray-200 w-20 h-20 rounded-lg"></div>
+                        <div class="animate-pulse bg-gray-200 w-20 h-20 rounded-lg"></div>
+                    </div>
+                </div>
+                <div class="w-full lg:w-1/2 space-y-4">
+                    <div class="animate-pulse bg-gray-200 h-8 w-32 rounded-full"></div>
+                    <div class="animate-pulse bg-gray-200 h-10 w-3/4 rounded"></div>
+                    <div class="animate-pulse bg-gray-200 h-4 w-full rounded"></div>
+                    <div class="animate-pulse bg-gray-200 h-4 w-2/3 rounded"></div>
+                    <div class="flex gap-2 mt-6">
+                        <div class="animate-pulse bg-gray-200 w-10 h-10 rounded-full"></div>
+                        <div class="animate-pulse bg-gray-200 w-10 h-10 rounded-full"></div>
+                        <div class="animate-pulse bg-gray-200 w-10 h-10 rounded-full"></div>
+                    </div>
+                    <div class="animate-pulse bg-gray-200 h-14 w-full rounded-lg mt-8"></div>
+                </div>
+            </div>
+
+            <!-- Actual content (hidden until loaded) -->
+            <div id="product-content" class="hidden flex flex-col lg:flex-row gap-12 lg:gap-16">
+
+                <!-- LEFT: Images -->
+                <div class="w-full lg:w-1/2">
+                    <!-- Main Image with zoom -->
+                    <div id="main-image-wrapper"
+                        class="zoom-wrapper relative rounded-2xl bg-leather-50 border border-leather-100 shadow-lg overflow-hidden"
+                        style="aspect-ratio: 1/1;"
+                        title="Pase el cursor para ampliar — clic para ver en pantalla completa">
+                        <img id="main-image" src="" alt=""
+                            class="w-full h-full object-cover">
+                        <!-- Magnifier lens (positioned by JS) -->
+                        <div id="zoom-lens" class="zoom-lens"></div>
+                        <!-- Zoom hint badge (hidden on hover via JS) -->
+                        <div id="zoom-hint" class="absolute bottom-3 left-3 flex items-center gap-1.5 bg-black/40 text-white text-xs px-2.5 py-1 rounded-full backdrop-blur-sm pointer-events-none transition-opacity duration-200">
+                            <i class="fa-solid fa-magnifying-glass-plus text-[11px]"></i>
+                            <span class="hidden sm:inline">Zoom al pasar</span>
+                            <span class="sm:hidden">Ampliar</span>
+                        </div>
+                        <!-- Nav arrows -->
+                        <button id="img-prev"
+                            class="hidden absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/90 hover:bg-white rounded-full flex items-center justify-center text-leather-900 shadow-lg transition-all hover:scale-110 z-10">
+                            <i class="fa-solid fa-chevron-left"></i>
+                        </button>
+                        <button id="img-next"
+                            class="hidden absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/90 hover:bg-white rounded-full flex items-center justify-center text-leather-900 shadow-lg transition-all hover:scale-110 z-10">
+                            <i class="fa-solid fa-chevron-right"></i>
+                        </button>
+                    </div>
+                    <!-- Thumbnails -->
+                    <div id="thumbnails" class="flex gap-2 sm:gap-3 mt-3 sm:mt-4 overflow-x-auto pb-2"></div>
+                </div>
+
+                <!-- RIGHT: Product Info -->
+                <div class="w-full lg:w-1/2 flex flex-col">
+                    <!-- Category badge -->
+                    <div class="mb-4">
+                        <span id="product-category-badge"
+                            class="inline-flex items-center gap-2 bg-leather-700 text-white text-xs px-4 py-1.5 rounded-full uppercase tracking-widest font-bold">
+                            <i class="fa-solid fa-tag"></i>
+                            <span id="product-category-text">Nacional</span>
+                        </span>
+                    </div>
+
+                    <!-- Name -->
+                    <h1 id="product-title"
+                        class="text-3xl md:text-4xl lg:text-5xl font-serif font-bold text-leather-950 mb-4 leading-tight">
+                    </h1>
+
+                    <!-- Description -->
+                    <p id="product-description" class="text-gray-600 text-base md:text-lg leading-relaxed mb-8"></p>
+
+                    <!-- Colors -->
+                    <div id="colors-section" class="hidden mb-8">
+                        <p class="text-xs text-gray-400 uppercase tracking-widest font-bold mb-3">Colores disponibles</p>
+                        <div id="product-colors" class="flex flex-wrap gap-3"></div>
+                    </div>
+
+                    <!-- Availability -->
+                    <div class="bg-leather-50 border border-leather-100 rounded-xl p-5 mb-8">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-leather-100 rounded-full flex items-center justify-center">
+                                <i class="fa-solid fa-box-open text-leather-700"></i>
+                            </div>
+                            <div>
+                                <p class="font-semibold text-leather-950 text-sm">Consultar disponibilidad</p>
+                                <p class="text-gray-500 text-xs">Contáctenos para verificar stock y precios</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- WhatsApp CTA Button -->
+                    <a id="whatsapp-btn" href="#" target="_blank"
+                        class="flex items-center justify-center gap-3 bg-[#25D366] hover:bg-[#128C7E] text-white px-8 py-4 rounded-xl font-bold text-lg tracking-wide transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5 transform mb-4">
+                        <i class="fa-brands fa-whatsapp text-2xl"></i>
+                        Consultar por WhatsApp
+                    </a>
+
+                    <!-- Secondary: Back to catalog -->
+                    <a href="catalogo.html"
+                        class="flex items-center justify-center gap-2 text-leather-700 hover:text-leather-900 font-medium text-sm transition-colors py-3">
+                        <i class="fa-solid fa-arrow-left"></i>
+                        Volver al catálogo
+                    </a>
+                </div>
+            </div>
+
+            <!-- Not found state -->
+            <div id="product-not-found" class="hidden text-center py-20">
+                <i class="fa-solid fa-box-open text-6xl text-leather-300 mb-6"></i>
+                <h2 class="text-2xl font-serif font-bold text-leather-950 mb-3">Producto no encontrado</h2>
+                <p class="text-gray-500 mb-8">El producto que buscas no existe o fue removido.</p>
+                <a href="catalogo.html"
+                    class="inline-flex items-center gap-2 bg-leather-700 hover:bg-leather-900 text-white px-8 py-3 rounded-lg font-medium transition-colors">
+                    <i class="fa-solid fa-arrow-left"></i>
+                    Ir al catálogo
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ LIGHTBOX MODAL ============ -->
+    <div id="lightbox" class="hidden fixed inset-0 z-[200] flex items-center justify-center bg-black/95">
+        <!-- Close -->
+        <button id="lb-close"
+            class="absolute top-4 right-4 w-12 h-12 flex items-center justify-center text-white text-2xl bg-white/10 hover:bg-white/20 rounded-full transition-colors z-10">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+        <!-- Prev -->
+        <button id="lb-prev"
+            class="hidden absolute left-3 sm:left-6 top-1/2 -translate-y-1/2 w-12 h-12 flex items-center justify-center text-white bg-white/10 hover:bg-white/25 rounded-full transition-colors z-10">
+            <i class="fa-solid fa-chevron-left text-lg"></i>
+        </button>
+        <!-- Image -->
+        <img id="lightbox-img" src="" alt="" class="select-none">
+        <!-- Next -->
+        <button id="lb-next"
+            class="hidden absolute right-3 sm:right-6 top-1/2 -translate-y-1/2 w-12 h-12 flex items-center justify-center text-white bg-white/10 hover:bg-white/25 rounded-full transition-colors z-10">
+            <i class="fa-solid fa-chevron-right text-lg"></i>
+        </button>
+        <!-- Counter -->
+        <div id="lb-counter" class="hidden absolute bottom-6 left-1/2 -translate-x-1/2 text-white/60 text-sm"></div>
+    </div>
+
+    <!-- Related Products -->
+    <section id="related-section" class="hidden py-16 bg-leather-100">
+        <div class="container mx-auto px-6 md:px-12">
+            <h2 class="text-2xl font-serif font-bold text-leather-950 mb-8 text-center">Otros productos que te pueden interesar</h2>
+            <div id="related-products" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"></div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-leather-950 text-leather-100 py-12 border-t border-leather-900">
+        <div class="container mx-auto px-6 md:px-12 text-center">
+            <a href="index.html"
+                class="font-serif text-2xl font-bold tracking-wider inline-flex items-center gap-2 text-white mb-6">
+                <i class="fa-solid fa-layer-group text-leather-500"></i>
+                Cuero's <span class="text-leather-500">Yeshua</span>
+            </a>
+            <p class="text-sm text-leather-100/60 mb-8 max-w-md mx-auto">Calidad superior en cueros y materiales para el artesano profesional.</p>
+            <p class="text-xs text-leather-100/30">&copy; <script>document.write(new Date().getFullYear())</script> Cuero's Yeshua. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <!-- Mobile Menu Script -->
+    <script>
+        const mobileBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const icon = document.getElementById('menu-icon');
+        mobileBtn.addEventListener('click', () => {
+            const isOpening = mobileMenu.classList.contains('hidden');
+            mobileMenu.classList.toggle('hidden');
+            mobileMenu.classList.toggle('flex');
+            if (isOpening) { icon.classList.replace('fa-bars', 'fa-xmark'); }
+            else { icon.classList.replace('fa-xmark', 'fa-bars'); }
+        });
+    </script>
+
+    <script type="module" src="/js/product-detail.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin | Cuero's Yeshua</title>
+    <meta name="robots" content="noindex, nofollow">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap"
+        rel="stylesheet">
+
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        leather: {
+                            50: '#F9F6F0',
+                            100: '#F2EBE1',
+                            300: '#D4B895',
+                            500: '#A67B5B',
+                            700: '#7A5230',
+                            900: '#4A3018',
+                            950: '#2B1C0E',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        .toast {
+            animation: slideIn 0.3s ease-out, fadeOut 0.3s ease-in 2.7s;
+        }
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+        .modal-backdrop {
+            animation: fadeInBg 0.2s ease-out;
+        }
+        @keyframes fadeInBg {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .color-circle {
+            width: 32px; height: 32px; border-radius: 50%;
+            border: 2px solid #ccc; cursor: pointer; transition: transform 0.2s;
+        }
+        .color-circle:hover { transform: scale(1.15); }
+        .img-preview {
+            width: 100px; height: 100px; object-fit: cover; border-radius: 8px;
+            border: 2px solid #e5e7eb;
+        }
+    </style>
+</head>
+
+<body class="font-sans bg-leather-50 text-gray-800 min-h-screen">
+
+    <!-- Toast Container -->
+    <div id="toast-container" class="fixed top-4 right-4 z-[100] space-y-2"></div>
+
+    <!-- ==================== LOGIN SCREEN ==================== -->
+    <div id="login-screen" class="min-h-screen flex items-center justify-center bg-leather-950 px-4">
+        <div class="bg-white rounded-2xl shadow-2xl p-10 w-full max-w-md">
+            <div class="text-center mb-8">
+                <h1 class="font-serif text-3xl font-bold text-leather-950 mb-1">CUEROS <span class="text-leather-500">YESHUA</span></h1>
+                <p class="text-gray-500 text-sm">Panel de Administración</p>
+            </div>
+            <form id="login-form" class="space-y-5">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Correo electrónico</label>
+                    <input id="login-email" type="email" required
+                        class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-leather-500 focus:border-transparent outline-none transition"
+                        placeholder="admin@ejemplo.com">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Contraseña</label>
+                    <input id="login-password" type="password" required
+                        class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-leather-500 focus:border-transparent outline-none transition"
+                        placeholder="••••••••">
+                </div>
+                <div id="login-error" class="hidden text-red-500 text-sm bg-red-50 p-3 rounded-lg"></div>
+                <button type="submit" id="login-btn"
+                    class="w-full bg-leather-700 hover:bg-leather-900 text-white py-3 rounded-lg font-semibold transition-colors">
+                    Iniciar Sesión
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ==================== ADMIN DASHBOARD ==================== -->
+    <div id="admin-dashboard" class="hidden">
+
+        <!-- Top Bar -->
+        <header class="bg-leather-950 text-white px-6 py-4 flex justify-between items-center sticky top-0 z-50 shadow-lg">
+            <div class="flex items-center gap-3">
+                <i class="fa-solid fa-shield-halved text-leather-300 text-xl"></i>
+                <h1 class="font-serif text-xl font-bold">CUEROS <span class="text-leather-300">YESHUA</span> <span class="text-leather-500 text-sm font-sans font-normal ml-2">Admin</span></h1>
+            </div>
+            <div class="flex items-center gap-4">
+                <a href="index.html" target="_blank" class="text-leather-300 hover:text-white transition text-sm">
+                    <i class="fa-solid fa-external-link-alt mr-1"></i> Ver Sitio
+                </a>
+                <button id="logout-btn" class="bg-leather-900 hover:bg-leather-700 px-4 py-2 rounded-lg text-sm transition-colors">
+                    <i class="fa-solid fa-right-from-bracket mr-1"></i> Salir
+                </button>
+            </div>
+        </header>
+
+        <!-- Navigation Tabs -->
+        <div class="bg-white border-b border-gray-200 px-6">
+            <div class="flex gap-1 max-w-7xl mx-auto">
+                <button class="admin-tab active-tab px-6 py-4 text-sm font-medium transition-colors" data-tab="categories">
+                    <i class="fa-solid fa-folder mr-2"></i>Categorías
+                </button>
+                <button class="admin-tab px-6 py-4 text-sm font-medium text-gray-500 hover:text-leather-700 transition-colors" data-tab="products">
+                    <i class="fa-solid fa-box mr-2"></i>Productos
+                </button>
+            </div>
+        </div>
+
+        <main class="max-w-7xl mx-auto px-6 py-8">
+
+            <!-- ========== CATEGORIES TAB ========== -->
+            <div id="tab-categories" class="tab-content">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-serif font-bold text-leather-950">Categorías</h2>
+                    <button id="btn-new-category" class="bg-leather-700 hover:bg-leather-900 text-white px-5 py-2.5 rounded-lg text-sm font-medium transition-colors">
+                        <i class="fa-solid fa-plus mr-2"></i>Nueva Categoría
+                    </button>
+                </div>
+                <div id="categories-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <!-- Filled by JS -->
+                </div>
+                <div id="categories-empty" class="hidden text-center py-20 text-gray-400">
+                    <i class="fa-solid fa-folder-open text-5xl mb-4"></i>
+                    <p class="text-lg">No hay categorías aún</p>
+                    <p class="text-sm">Crea tu primera categoría para empezar</p>
+                </div>
+            </div>
+
+            <!-- ========== PRODUCTS TAB ========== -->
+            <div id="tab-products" class="tab-content hidden">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                    <h2 class="text-2xl font-serif font-bold text-leather-950">Productos</h2>
+                    <div class="flex gap-3 items-center">
+                        <select id="filter-category" class="border border-gray-200 rounded-lg px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-leather-500">
+                            <option value="">Todas las categorías</option>
+                        </select>
+                        <button id="btn-new-product" class="bg-leather-700 hover:bg-leather-900 text-white px-5 py-2.5 rounded-lg text-sm font-medium transition-colors">
+                            <i class="fa-solid fa-plus mr-2"></i>Nuevo Producto
+                        </button>
+                    </div>
+                </div>
+                <div id="products-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Filled by JS -->
+                </div>
+                <div id="products-empty" class="hidden text-center py-20 text-gray-400">
+                    <i class="fa-solid fa-box-open text-5xl mb-4"></i>
+                    <p class="text-lg">No hay productos aún</p>
+                    <p class="text-sm">Crea categorías primero y luego agrega productos</p>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- ==================== CATEGORY MODAL ==================== -->
+    <div id="category-modal" class="hidden fixed inset-0 z-[80] flex items-center justify-center p-4">
+        <div class="modal-backdrop absolute inset-0 bg-black/50" onclick="closeCategoryModal()"></div>
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg relative z-10 p-8">
+            <h3 id="category-modal-title" class="text-xl font-serif font-bold text-leather-950 mb-6">Nueva Categoría</h3>
+            <form id="category-form" class="space-y-4">
+                <input type="hidden" id="category-id">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Nombre</label>
+                    <input id="category-name" type="text" required
+                        class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-leather-500 outline-none"
+                        placeholder="Ej: Cuero Nacional">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Descripción</label>
+                    <textarea id="category-desc" rows="3"
+                        class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-leather-500 outline-none resize-none"
+                        placeholder="Descripción breve de la categoría..."></textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Orden</label>
+                    <input id="category-order" type="number" value="0"
+                        class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-leather-500 outline-none">
+                </div>
+                <div class="flex gap-3 pt-4">
+                    <button type="submit" class="flex-1 bg-leather-700 hover:bg-leather-900 text-white py-3 rounded-lg font-medium transition-colors">
+                        Guardar
+                    </button>
+                    <button type="button" onclick="closeCategoryModal()" class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-3 rounded-lg font-medium transition-colors">
+                        Cancelar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ==================== PRODUCT MODAL ==================== -->
+    <div id="product-modal" class="hidden fixed inset-0 z-[80] flex items-start justify-center p-4 overflow-y-auto">
+        <div class="modal-backdrop absolute inset-0 bg-black/50" onclick="closeProductModal()"></div>
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl relative z-10 p-8 my-8">
+            <h3 id="product-modal-title" class="text-xl font-serif font-bold text-leather-950 mb-6">Nuevo Producto</h3>
+            <form id="product-form" class="space-y-5">
+                <input type="hidden" id="product-id">
+
+                <!-- Name -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Nombre del producto</label>
+                    <input id="product-name" type="text" required
+                        class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-leather-500 outline-none"
+                        placeholder="Ej: Vaqueta Nacional">
+                </div>
+
+                <!-- Description -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Descripción</label>
+                    <textarea id="product-desc" rows="3"
+                        class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-leather-500 outline-none resize-none"
+                        placeholder="Descripción del producto..."></textarea>
+                </div>
+
+                <!-- Category -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Categoría</label>
+                    <select id="product-category" required
+                        class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-leather-500 outline-none">
+                        <option value="">Seleccionar categoría</option>
+                    </select>
+                </div>
+
+                <!-- Colors -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Colores Disponibles</label>
+                    <div class="flex flex-wrap gap-2 mb-3" id="colors-preview">
+                        <!-- Color circles appear here -->
+                    </div>
+                    <div class="flex gap-2 items-center">
+                        <input id="color-hex-input" type="color" value="#A67B5B"
+                            class="w-10 h-10 rounded-lg cursor-pointer border border-gray-200">
+                        <button type="button" id="btn-add-color"
+                            class="bg-leather-100 hover:bg-leather-300 text-leather-900 px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                            <i class="fa-solid fa-plus mr-1"></i> Agregar color
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Images -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Imágenes del producto</label>
+                    <div class="flex flex-wrap gap-3 mb-3" id="images-preview">
+                        <!-- Image previews appear here -->
+                    </div>
+                    <label class="flex items-center justify-center gap-2 border-2 border-dashed border-gray-300 hover:border-leather-500 rounded-lg p-4 cursor-pointer transition-colors">
+                        <i class="fa-solid fa-cloud-arrow-up text-gray-400 text-xl"></i>
+                        <span class="text-gray-500 text-sm">Subir imágenes (se optimizan automáticamente)</span>
+                        <input id="image-upload" type="file" accept="image/*,.heic,.heif" multiple class="hidden">
+                    </label>
+                    <p class="text-xs text-gray-400 mt-1">Las imágenes se redimensionan y convierten a WebP automáticamente</p>
+                </div>
+
+                <!-- Active toggle -->
+                <div class="flex items-center gap-3">
+                    <input id="product-active" type="checkbox" checked
+                        class="w-5 h-5 text-leather-700 border-gray-300 rounded focus:ring-leather-500">
+                    <label for="product-active" class="text-sm text-gray-700">Producto activo (visible en catálogo)</label>
+                </div>
+
+                <!-- Submit -->
+                <div class="flex gap-3 pt-4">
+                    <button type="submit" id="product-submit-btn" class="flex-1 bg-leather-700 hover:bg-leather-900 text-white py-3 rounded-lg font-medium transition-colors">
+                        Guardar Producto
+                    </button>
+                    <button type="button" onclick="closeProductModal()" class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-3 rounded-lg font-medium transition-colors">
+                        Cancelar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ==================== DELETE CONFIRM MODAL ==================== -->
+    <div id="delete-modal" class="hidden fixed inset-0 z-[90] flex items-center justify-center p-4">
+        <div class="modal-backdrop absolute inset-0 bg-black/50"></div>
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm relative z-10 p-8 text-center">
+            <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="fa-solid fa-trash text-red-500 text-2xl"></i>
+            </div>
+            <h3 class="text-lg font-bold text-gray-900 mb-2">¿Eliminar este elemento?</h3>
+            <p id="delete-modal-text" class="text-gray-500 text-sm mb-6">Esta acción no se puede deshacer.</p>
+            <div class="flex gap-3">
+                <button id="delete-confirm-btn" class="flex-1 bg-red-500 hover:bg-red-600 text-white py-3 rounded-lg font-medium transition-colors">
+                    Eliminar
+                </button>
+                <button id="delete-cancel-btn" class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-3 rounded-lg font-medium transition-colors">
+                    Cancelar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="hidden fixed inset-0 z-[95] bg-black/30 flex items-center justify-center">
+        <div class="bg-white rounded-xl p-6 flex items-center gap-4 shadow-2xl">
+            <div class="animate-spin rounded-full h-8 w-8 border-4 border-leather-200 border-t-leather-700"></div>
+            <span id="loading-text" class="text-gray-700 font-medium">Procesando...</span>
+        </div>
+    </div>
+
+    <script type="module" src="/js/admin.js"></script>
+</body>
+
+</html>
