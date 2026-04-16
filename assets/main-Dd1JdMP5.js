@@ -1,4 +1,4 @@
-import{t as e}from"./supabase-config-GgnMh8qz.js";async function t(){let t=document.getElementById(`featured-products`);if(!t)return;let{data:r}=await e.from(`products`).select(`
+import{t as e}from"./supabase-config-xTA2IjZq.js";async function t(){let t=document.getElementById(`featured-products`);if(!t)return;let{data:r}=await e.from(`products`).select(`
       *,
       categories(name),
       product_images(*)

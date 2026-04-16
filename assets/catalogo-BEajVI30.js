@@ -1,4 +1,4 @@
-import{t as e}from"./supabase-config-GgnMh8qz.js";var t=[],n=[],r=``;document.addEventListener(`DOMContentLoaded`,async()=>{await Promise.all([i(),a()]),o(),s(),setTimeout(l,100)});async function i(){let{data:n}=await e.from(`categories`).select(`*`).order(`sort_order`,{ascending:!0});t=n||[]}async function a(){let{data:t}=await e.from(`products`).select(`
+import{t as e}from"./supabase-config-xTA2IjZq.js";var t=[],n=[],r=``;document.addEventListener(`DOMContentLoaded`,async()=>{await Promise.all([i(),a()]),o(),s(),setTimeout(l,100)});async function i(){let{data:n}=await e.from(`categories`).select(`*`).order(`sort_order`,{ascending:!0});t=n||[]}async function a(){let{data:t}=await e.from(`products`).select(`
       *,
       categories(name, slug),
       product_colors(*),

@@ -1,4 +1,4 @@
-import{t as e}from"./supabase-config-GgnMh8qz.js";var t=`50584449281`,n=0,r=[],i=0,a=1;document.addEventListener(`DOMContentLoaded`,async()=>{let t=new URLSearchParams(window.location.search).get(`id`);if(!t){d();return}let{data:n,error:r}=await e.from(`products`).select(`
+import{t as e}from"./supabase-config-xTA2IjZq.js";var t=`50584449281`,n=0,r=[],i=0,a=1;document.addEventListener(`DOMContentLoaded`,async()=>{let t=new URLSearchParams(window.location.search).get(`id`);if(!t){d();return}let{data:n,error:r}=await e.from(`products`).select(`
       *,
       categories(name, slug),
       product_colors(*),
