@@ -18,6 +18,9 @@ jobs:
         run: |
           npm install
           npm run build
+        env:
+          VITE_SUPABASE_URL: https://kqaphpyjxehxaridrvcx.supabase.co
+          VITE_SUPABASE_PUBLISHABLE_KEY: sb_publishable_0EUz8PO5WEtZXPqEt_sJvg_zP4bJUEo
 
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@v4
