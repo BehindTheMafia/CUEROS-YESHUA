@@ -1,4 +1,5 @@
 import { supabase } from './supabase-config.js';
+import { imgAt, srcSet, initImageTransforms } from './supabase-image.js';
 
 // ==================== STATE ====================
 let categories = [];
@@ -11,6 +12,12 @@ const WHATSAPP_NUMBER = '50584449281';
 // ==================== INIT ====================
 document.addEventListener('DOMContentLoaded', async () => {
   await Promise.all([loadCategories(), loadProducts()]);
+
+  // Probe if Supabase image transforms are available (Pro plan)
+  // Must run before render so URLs are correct
+  const sampleImg = products.find(p => p.product_images?.length)?.product_images?.[0]?.image_url;
+  if (sampleImg) await initImageTransforms(sampleImg);
+
   renderFilters();
   renderProducts();
 
@@ -93,7 +100,9 @@ function renderProducts() {
       return a.sort_order - b.sort_order;
     });
     const primaryImg = images[0];
-    const imgSrc = primaryImg ? primaryImg.image_url : 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300"><rect fill="%23f3f4f6" width="400" height="300"/><text fill="%239ca3af" x="50%" y="50%" text-anchor="middle" dy=".3em" font-size="16">Sin imagen</text></svg>';
+    const rawUrl = primaryImg ? primaryImg.image_url : '';
+    const imgSrc = rawUrl ? imgAt(rawUrl, 'thumbnail') : 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300"><rect fill="%23f3f4f6" width="400" height="300"/><text fill="%239ca3af" x="50%" y="50%" text-anchor="middle" dy=".3em" font-size="16">Sin imagen</text></svg>';
+    const imgSrcset = rawUrl ? srcSet(rawUrl, [300, 500, 800], 70) : '';
     const catName = prod.categories?.name || '';
     const colors = prod.product_colors || [];
     const delay = (idx % 3) * 100;
@@ -104,7 +113,7 @@ function renderProducts() {
       <a href="${detailUrl}" class="product-card reveal block" style="transition-delay: ${delay}ms;">
         <!-- Image Container -->
         <div class="product-image-container relative">
-          <img src="${imgSrc}" alt="${esc(prod.name)}" class="product-image" loading="lazy">
+          <img src="${imgSrc}" ${imgSrcset ? `srcset="${imgSrcset}" sizes="(max-width:640px) 100vw, (max-width:1024px) 50vw, 33vw"` : ''} alt="${esc(prod.name)}" class="product-image" loading="lazy" decoding="async">
           ${images.length > 1 ? `
             <div class="absolute bottom-3 right-3 bg-white/90 text-leather-900 text-xs px-2 py-1 rounded-full font-medium">
               <i class="fa-solid fa-images mr-1"></i>${images.length} fotos

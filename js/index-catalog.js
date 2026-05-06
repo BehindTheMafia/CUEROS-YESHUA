@@ -1,4 +1,5 @@
 import { supabase } from './supabase-config.js';
+import { imgAt } from './supabase-image.js';
 
 /**
  * Loads the 3 most recent active products and renders them in the home page products section
@@ -23,7 +24,7 @@ async function loadFeaturedProducts() {
   // Replace the first two static cards (keep the CTA card)
   const cards = products.map(prod => {
     const primaryImg = prod.product_images?.find(i => i.is_primary) || prod.product_images?.[0];
-    const imgSrc = primaryImg ? primaryImg.image_url : 'assets/cuero-nacional.png';
+    const imgSrc = primaryImg ? imgAt(primaryImg.image_url, 'thumbnail') : 'assets/cuero-nacional.png';
     const catName = prod.categories?.name || '';
 
     return `

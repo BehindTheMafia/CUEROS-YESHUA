@@ -36,6 +36,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('image-upload').addEventListener('change', handleImageSelect);
   document.getElementById('filter-category').addEventListener('change', renderProducts);
 
+  // Optimize all images
+  document.getElementById('btn-optimize-all').addEventListener('click', handleOptimizeAll);
+
   // Delete modal
   document.getElementById('delete-cancel-btn').addEventListener('click', closeDeleteModal);
   document.getElementById('delete-confirm-btn').addEventListener('click', () => {
@@ -551,4 +554,97 @@ function extractStoragePath(url) {
   const idx = url.indexOf(marker);
   if (idx === -1) return null;
   return decodeURIComponent(url.substring(idx + marker.length));
+}
+
+// ==================== BATCH IMAGE RE-OPTIMIZATION ====================
+async function handleOptimizeAll() {
+  // Gather all product images
+  const { data: allImages, error } = await supabase
+    .from('product_images')
+    .select('id, image_url, product_id');
+
+  if (error) { toast('Error cargando imágenes', 'error'); return; }
+  if (!allImages || allImages.length === 0) { toast('No hay imágenes para optimizar'); return; }
+
+  // Filter to non-WebP images (already optimized ones are skipped)
+  const toOptimize = allImages.filter(img => {
+    const url = img.image_url.toLowerCase();
+    return !url.endsWith('.webp');
+  });
+
+  if (toOptimize.length === 0) {
+    toast('✅ Todas las imágenes ya están en formato WebP');
+    return;
+  }
+
+  const confirmMsg = `Se van a re-optimizar ${toOptimize.length} imagen(es) de ${allImages.length} total.\n\nEsto descargará cada imagen, la convertirá a WebP (max 1200px, 80% calidad), y la re-subirá.\n\n¿Continuar?`;
+  if (!confirm(confirmMsg)) return;
+
+  showLoading(`Optimizando 0/${toOptimize.length}...`);
+
+  let optimized = 0;
+  let errors = 0;
+
+  for (const img of toOptimize) {
+    try {
+      showLoading(`Optimizando ${optimized + 1}/${toOptimize.length}...`);
+
+      // 1. Download the original image
+      const response = await fetch(img.image_url);
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const originalBlob = await response.blob();
+
+      // 2. Create a File object for optimizeImage()
+      const ext = img.image_url.split('.').pop().split('?')[0] || 'jpg';
+      const tempFile = new File([originalBlob], `image.${ext}`, { type: originalBlob.type });
+
+      // 3. Optimize (resize + WebP)
+      const { blob: optimizedBlob, filename } = await optimizeImage(tempFile);
+
+      // 4. Upload optimized version to Supabase Storage
+      const storagePath = `${img.product_id}/${filename}`;
+      const { error: uploadError } = await supabase.storage
+        .from('product-images')
+        .upload(storagePath, optimizedBlob, {
+          contentType: 'image/webp',
+          upsert: true
+        });
+
+      if (uploadError) throw uploadError;
+
+      // 5. Get new public URL
+      const { data: urlData } = supabase.storage.from('product-images').getPublicUrl(storagePath);
+      const newUrl = urlData.publicUrl;
+
+      // 6. Update DB record with new URL
+      const { error: updateError } = await supabase
+        .from('product_images')
+        .update({ image_url: newUrl })
+        .eq('id', img.id);
+
+      if (updateError) throw updateError;
+
+      // 7. Delete old file from storage
+      const oldPath = extractStoragePath(img.image_url);
+      if (oldPath && oldPath !== storagePath) {
+        await supabase.storage.from('product-images').remove([oldPath]);
+      }
+
+      optimized++;
+      console.log(`✅ Optimized: ${img.image_url} → ${newUrl}`);
+
+    } catch (err) {
+      errors++;
+      console.error(`❌ Error optimizing image ${img.id}:`, err);
+    }
+  }
+
+  hideLoading();
+  await loadProducts();
+
+  if (errors === 0) {
+    toast(`✅ ${optimized} imagen(es) optimizadas exitosamente`);
+  } else {
+    toast(`${optimized} optimizadas, ${errors} con errores. Ver consola.`, 'error');
+  }
 }

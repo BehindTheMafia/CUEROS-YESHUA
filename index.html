@@ -15,6 +15,9 @@
         href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap"
         rel="stylesheet">
 
+    <!-- Preload critical hero image -->
+    <link rel="preload" as="image" type="image/webp" href="assets/slide1.webp">
+
     <!-- FontAwesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
@@ -40,7 +43,7 @@
                         serif: ['Playfair Display', 'serif'],
                     },
                     backgroundImage: {
-                        'leather-pattern': "url('assets/pattern.png')",
+                        'leather-pattern': "url('assets/pattern.webp')",
                     }
                 }
             }
@@ -150,17 +153,26 @@
     <section id="inicio" class="relative h-screen flex items-center justify-center overflow-hidden bg-leather-950">
         <!-- Dynamic Carousel -->
         <div id="hero-carousel" class="absolute inset-0 z-0">
-            <!-- Slide 1 -->
+            <!-- Slide 1 (eager — visible on load) -->
             <div class="carousel-item active">
-                <img src="assets/slide1.png" alt="Exhibición de cuero premium" class="w-full h-full object-cover" />
+                <picture>
+                    <source srcset="assets/slide1.webp" type="image/webp">
+                    <img src="assets/slide1.png" alt="Exhibición de cuero premium" class="w-full h-full object-cover" fetchpriority="high" />
+                </picture>
             </div>
-            <!-- Slide 2 -->
+            <!-- Slide 2 (lazy — off-screen) -->
             <div class="carousel-item">
-                <img src="assets/slide2.png" alt="Texturas de cuero exótico" class="w-full h-full object-cover" />
+                <picture>
+                    <source srcset="assets/slide2.webp" type="image/webp">
+                    <img src="assets/slide2.png" alt="Texturas de cuero exótico" class="w-full h-full object-cover" loading="lazy" />
+                </picture>
             </div>
-            <!-- Slide 3 -->
+            <!-- Slide 3 (lazy — off-screen) -->
             <div class="carousel-item">
-                <img src="assets/slide3.png" alt="Showroom de marroquinería" class="w-full h-full object-cover" />
+                <picture>
+                    <source srcset="assets/slide3.webp" type="image/webp">
+                    <img src="assets/slide3.png" alt="Showroom de marroquinería" class="w-full h-full object-cover" loading="lazy" />
+                </picture>
             </div>
         </div>
 
@@ -223,8 +235,11 @@
                 <div class="w-full md:w-1/2 relative reveal">
                     <div
                         class="relative rounded-t-full overflow-hidden border-[8px] border-white shadow-2xl z-10 aspect-[4/5]">
-                        <img src="assets/nosotros.png" alt="Artesano trabajando cuero"
-                            class="w-full h-full object-cover" />
+                        <picture>
+                            <source srcset="assets/nosotros.webp" type="image/webp">
+                            <img src="assets/nosotros.png" alt="Artesano trabajando cuero"
+                                class="w-full h-full object-cover" loading="lazy" />
+                        </picture>
                     </div>
                     <!-- Decorative element -->
                     <div
@@ -290,8 +305,11 @@
                 <a href="catalogo.html"
                     class="bg-white rounded-xl overflow-hidden shadow-lg group product-card-hover cursor-pointer reveal">
                     <div class="h-64 overflow-hidden relative">
-                        <img src="assets/cuero-nacional.png" alt="Cuero Nacional"
-                            class="w-full h-full object-cover transition-transform duration-700 product-img">
+                        <picture>
+                            <source srcset="assets/cuero-nacional.webp" type="image/webp">
+                            <img src="assets/cuero-nacional.png" alt="Cuero Nacional"
+                                class="w-full h-full object-cover transition-transform duration-700 product-img" loading="lazy">
+                        </picture>
                         <div
                             class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
                             <span class="text-white font-medium">Ver catálogo completo <i
@@ -311,8 +329,11 @@
                     class="bg-white rounded-xl overflow-hidden shadow-lg group product-card-hover cursor-pointer reveal"
                     style="transition-delay: 100ms;">
                     <div class="h-64 overflow-hidden relative">
-                        <img src="assets/cuero-importado.png" alt="Cuero Importado"
-                            class="w-full h-full object-cover transition-transform duration-700 product-img">
+                        <picture>
+                            <source srcset="assets/cuero-importado.webp" type="image/webp">
+                            <img src="assets/cuero-importado.png" alt="Cuero Importado"
+                                class="w-full h-full object-cover transition-transform duration-700 product-img" loading="lazy">
+                        </picture>
                         <div
                             class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
                             <span class="text-white font-medium">Ver catálogo completo <i

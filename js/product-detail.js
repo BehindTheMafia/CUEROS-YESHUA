@@ -1,4 +1,5 @@
 import { supabase } from './supabase-config.js';
+import { imgAt, srcSet, initImageTransforms } from './supabase-image.js';
 
 const WHATSAPP_NUMBER = '50584449281';
 
@@ -30,6 +31,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   if (error || !product) { showNotFound(); return; }
 
+  // Probe if Supabase image transforms are available (Pro plan)
+  const sampleImg = product.product_images?.[0]?.image_url;
+  if (sampleImg) await initImageTransforms(sampleImg);
+
   renderProduct(product);
   loadRelatedProducts(product.category_id, product.id);
   initLightbox();
@@ -53,8 +58,15 @@ function renderProduct(product) {
   // Main image
   const mainImg = document.getElementById('main-image');
   if (images.length > 0) {
-    mainImg.src = images[0].image_url;
+    mainImg.src = imgAt(images[0].image_url, 'detail');
     mainImg.alt = product.name;
+    // Add srcset for responsive loading
+    const responsiveSrcset = srcSet(images[0].image_url, [400, 600, 800, 1200], 80);
+    if (responsiveSrcset) {
+      mainImg.setAttribute('srcset', responsiveSrcset);
+      mainImg.setAttribute('sizes', '(max-width:768px) 100vw, 50vw');
+    }
+    mainImg.setAttribute('decoding', 'async');
   }
 
   // Click on main image → lightbox
@@ -69,7 +81,7 @@ function renderProduct(product) {
   if (images.length > 1) {
     thumbContainer.innerHTML = images.map((img, i) => `
       <button class="thumb-btn ${i === 0 ? 'active' : ''}" data-index="${i}" aria-label="Imagen ${i + 1}">
-        <img src="${img.image_url}" alt="${esc(product.name)}" class="w-full h-full object-cover" loading="lazy">
+        <img src="${imgAt(img.image_url, 'micro')}" alt="${esc(product.name)}" class="w-full h-full object-cover" loading="lazy" decoding="async">
       </button>
     `).join('');
 
@@ -117,10 +129,16 @@ function setCurrentImage(index) {
   const mainImg = document.getElementById('main-image');
   mainImg.style.opacity = '0';
   setTimeout(() => {
-    mainImg.src = images[index].image_url;
+    mainImg.src = imgAt(images[index].image_url, 'detail');
+    // Update srcset
+    const responsiveSrcset = srcSet(images[index].image_url, [400, 600, 800, 1200], 80);
+    if (responsiveSrcset) {
+      mainImg.setAttribute('srcset', responsiveSrcset);
+      mainImg.setAttribute('sizes', '(max-width:768px) 100vw, 50vw');
+    }
     mainImg.style.opacity = '1';
     // Update magnifier source when image changes
-    updateMagnifierSource(images[index].image_url);
+    updateMagnifierSource(imgAt(images[index].image_url, 'full'));
   }, 150);
 
   // Update active thumb
@@ -201,7 +219,7 @@ function initLightbox() {
   const lbCounter = document.getElementById('lb-counter');
 
   function updateLightbox() {
-    lbImg.src = images[lbIndex].image_url;
+    lbImg.src = imgAt(images[lbIndex].image_url, 'full');
     if (images.length > 1) {
       lbCounter.textContent = `${lbIndex + 1} / ${images.length}`;
       lbCounter.classList.remove('hidden');
@@ -279,7 +297,7 @@ async function loadRelatedProducts(categoryId, currentProductId) {
       <a href="producto.html?id=${prod.id}"
         class="bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl hover:-translate-y-2 transition-all duration-500 border border-leather-100 group">
         <div class="h-52 overflow-hidden relative">
-          ${imgSrc ? `<img src="${imgSrc}" alt="${esc(prod.name)}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" loading="lazy">` : ''}
+          ${imgSrc ? `<img src="${imgAt(imgSrc, 'related')}" alt="${esc(prod.name)}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" loading="lazy" decoding="async">` : ''}
           <div class="absolute top-3 right-3 bg-leather-700 text-white text-xs px-3 py-1 rounded-full uppercase tracking-tight font-bold">${esc(catName)}</div>
         </div>
         <div class="p-5">
