@@ -61,17 +61,37 @@ function renderFilters() {
 
   container.innerHTML = allBtn + catBtns;
 
-  // Attach listeners
-  container.querySelectorAll('.cat-filter').forEach(btn => {
+  // Re-attach event listeners
+  const filters = container.querySelectorAll('.cat-filter');
+  filters.forEach(btn => {
     btn.addEventListener('click', () => {
-      container.querySelectorAll('.cat-filter').forEach(b => {
-        b.className = 'cat-filter flex-shrink-0 whitespace-nowrap bg-white text-leather-700 border border-leather-200 px-5 py-2 rounded-full text-sm font-medium transition-all hover:border-leather-700';
-      });
-      btn.className = 'cat-filter active flex-shrink-0 whitespace-nowrap bg-leather-700 text-white px-5 py-2 rounded-full text-sm font-medium shadow-lg transition-all hover:bg-leather-900';
       activeCategory = btn.dataset.cat;
+      filters.forEach(b => {
+        b.classList.remove('active', 'bg-leather-700', 'text-white', 'shadow-lg');
+        b.classList.add('bg-white', 'text-leather-700', 'border-leather-200');
+      });
+      btn.classList.add('active', 'bg-leather-700', 'text-white', 'shadow-lg');
+      btn.classList.remove('bg-white', 'text-leather-700', 'border-leather-200');
+      
+      // Auto-scroll to center on mobile
+      btn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+      
       renderProducts();
     });
   });
+
+  // Handle scroll mask gradients for mobile
+  const mask = container.closest('.scroll-mask');
+  if (mask) {
+    const updateMask = () => {
+      const { scrollLeft, scrollWidth, clientWidth } = container;
+      mask.classList.toggle('scrolled-left', scrollLeft > 10);
+      mask.classList.toggle('scrolled-right', scrollLeft + clientWidth >= scrollWidth - 10);
+    };
+    container.addEventListener('scroll', updateMask);
+    updateMask(); // init
+    window.addEventListener('resize', updateMask);
+  }
 }
 
 function renderProducts() {
