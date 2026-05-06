@@ -91,6 +91,19 @@ function renderFilters() {
     container.addEventListener('scroll', updateMask);
     updateMask(); // init
     window.addEventListener('resize', updateMask);
+
+    // Add arrow button functionality
+    const btnLeft = mask.querySelector('.arrow-left');
+    const btnRight = mask.querySelector('.arrow-right');
+
+    if (btnLeft && btnRight) {
+      btnLeft.onclick = () => {
+        container.scrollBy({ left: -200, behavior: 'smooth' });
+      };
+      btnRight.onclick = () => {
+        container.scrollBy({ left: 200, behavior: 'smooth' });
+      };
+    }
   }
 }
 
