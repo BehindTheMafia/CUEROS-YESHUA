@@ -150,12 +150,48 @@
             opacity: 1;
         }
 
+        /* Scroll Arrows */
+        .scroll-arrow {
+            position: absolute;
+            top: 54%;
+            transform: translateY(-50%);
+            width: 36px;
+            height: 36px;
+            background: white;
+            color: #7A5230;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+            border: 1px solid rgba(166,123,91,0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            opacity: 0;
+            pointer-events: none;
+        }
+        .scroll-arrow:active { transform: translateY(-50%) scale(0.9); }
+        .arrow-left { left: -5px; }
+        .arrow-right { right: -5px; }
+
+        .scroll-mask.scrolled-left .arrow-left {
+            opacity: 1;
+            pointer-events: auto;
+            left: 5px;
+        }
+        .scroll-mask:not(.scrolled-right) .arrow-right {
+            opacity: 1;
+            pointer-events: auto;
+            right: 5px;
+        }
+
         @media (min-width: 768px) {
-            .scroll-mask::after, .scroll-mask::before { display: none; }
+            .scroll-mask::after, .scroll-mask::before, .scroll-arrow { display: none !important; }
             .sticky-filters { @apply shadow-none pt-0 -mx-0 px-0 relative top-0 bg-transparent flex-wrap justify-center; backdrop-filter: none; }
         }
     </style>
-  <script type="module" crossorigin src="./assets/catalogo-Dae72iGm.js"></script>
+  <script type="module" crossorigin src="./assets/catalogo-Bx4WGRCG.js"></script>
   <link rel="modulepreload" crossorigin href="./assets/supabase-config-xTA2IjZq.js">
   <link rel="modulepreload" crossorigin href="./assets/supabase-image-Dtm2Wkp6.js">
 </head>
@@ -219,6 +255,12 @@
             <!-- Dynamic Category Filters -->
             <div class="sticky-filters mb-8 md:mb-16 reveal" style="transition-delay: 200ms;">
                 <div class="scroll-mask">
+                    <button class="scroll-arrow arrow-left" aria-label="Deslizar izquierda">
+                        <i class="fa-solid fa-chevron-left"></i>
+                    </button>
+                    <button class="scroll-arrow arrow-right" aria-label="Deslizar derecha">
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </button>
                     <div id="category-filters" class="filters-scroll flex md:flex-wrap md:justify-center gap-2 sm:gap-3 overflow-x-auto pb-3 px-1 no-scrollbar-md">
                         <!-- Filled by JS -->
                         <div class="skeleton w-20 h-10 rounded-full flex-shrink-0"></div>
