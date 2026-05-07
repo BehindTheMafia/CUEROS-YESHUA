@@ -72,7 +72,7 @@
             border: 2px solid #e5e7eb;
         }
     </style>
-  <script type="module" crossorigin src="./assets/admin-5HK1qhKM.js"></script>
+  <script type="module" crossorigin src="./assets/admin-DMwP_AxE.js"></script>
   <link rel="modulepreload" crossorigin href="./assets/supabase-config-xTA2IjZq.js">
 </head>
 
@@ -240,6 +240,18 @@
                     <input id="product-name" type="text" required
                         class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-leather-500 outline-none"
                         placeholder="Ej: Vaqueta Nacional">
+                </div>
+
+                <!-- Section Title (Optional) -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Título de Sección / Subcategoría <span class="text-xs font-normal text-gray-400">(Opcional)</span></label>
+                    <input id="product-section" type="text" list="sections-list"
+                        class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-leather-500 outline-none"
+                        placeholder="Ej: Baquetas de Primera">
+                    <datalist id="sections-list">
+                        <!-- Filled by JS with existing sections -->
+                    </datalist>
+                    <p class="text-[10px] text-gray-400 mt-1">Escribe o selecciona un título existente para agrupar productos.</p>
                 </div>
 
                 <!-- Description -->
