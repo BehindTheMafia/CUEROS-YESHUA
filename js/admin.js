@@ -120,26 +120,80 @@ function renderCategories() {
   }
 
   empty.classList.add('hidden');
-  container.innerHTML = categories.map(cat => `
-    <div class="bg-white border border-gray-100 rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow">
-      <div class="flex justify-between items-start">
-        <div>
-          <h3 class="font-semibold text-leather-950 text-lg">${esc(cat.name)}</h3>
-          <p class="text-gray-500 text-sm mt-1">${esc(cat.description || 'Sin descripción')}</p>
-          <span class="inline-block mt-3 text-xs text-leather-500 bg-leather-50 px-3 py-1 rounded-full">Orden: ${cat.sort_order}</span>
+  container.innerHTML = categories.map(cat => {
+    // Get subcategories from currently loaded products
+    const subcats = [...new Set(products
+      .filter(p => p.category_id === cat.id && p.section_title && p.section_title.trim() !== '')
+      .map(p => p.section_title.trim())
+    )].sort();
+
+    const subcatsHtml = subcats.length > 0 
+      ? `<div class="mt-4 pt-4 border-t border-gray-50">
+           <div class="text-[10px] text-gray-400 uppercase font-bold tracking-wider mb-2 flex justify-between">
+            <span>Subcategorías / Títulos</span>
+            <span class="font-normal lowercase">Click lápiz para renombrar</span>
+           </div>
+           <div class="flex flex-wrap gap-2">
+             ${subcats.map(s => `
+               <div class="group flex items-center gap-2 bg-leather-50/50 border border-leather-100/30 px-3 py-1.5 rounded-lg text-xs text-leather-900">
+                 <span class="font-medium">${esc(s)}</span>
+                 <button onclick="window._editSubcategory('${cat.id}', '${esc(s).replace(/'/g, "\\'")}')" class="text-leather-400 hover:text-leather-600 transition">
+                   <i class="fa-solid fa-pen text-[10px]"></i>
+                 </button>
+               </div>
+             `).join('')}
+           </div>
+         </div>`
+      : '';
+
+    return `
+      <div class="bg-white border border-gray-100 rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow">
+        <div class="flex justify-between items-start">
+          <div>
+            <h3 class="font-semibold text-leather-950 text-lg">${esc(cat.name)}</h3>
+            <p class="text-gray-500 text-sm mt-1">${esc(cat.description || 'Sin descripción')}</p>
+            <span class="inline-block mt-3 text-xs text-leather-500 bg-leather-50 px-3 py-1 rounded-full">Orden: ${cat.sort_order}</span>
+          </div>
+          <div class="flex gap-2">
+            <button onclick="window._editCategory('${cat.id}')" class="text-gray-400 hover:text-leather-700 transition-colors p-2">
+              <i class="fa-solid fa-pen-to-square"></i>
+            </button>
+            <button onclick="window._deleteCategory('${cat.id}', '${esc(cat.name)}')" class="text-gray-400 hover:text-red-500 transition-colors p-2">
+              <i class="fa-solid fa-trash"></i>
+            </button>
+          </div>
         </div>
-        <div class="flex gap-2">
-          <button onclick="window._editCategory('${cat.id}')" class="text-gray-400 hover:text-leather-700 transition-colors p-2">
-            <i class="fa-solid fa-pen-to-square"></i>
-          </button>
-          <button onclick="window._deleteCategory('${cat.id}', '${esc(cat.name)}')" class="text-gray-400 hover:text-red-500 transition-colors p-2">
-            <i class="fa-solid fa-trash"></i>
-          </button>
-        </div>
+        ${subcatsHtml}
       </div>
-    </div>
-  `).join('');
+    `;
+  }).join('');
 }
+
+window._editSubcategory = async function(catId, oldTitle) {
+  const newTitle = prompt(`Renombrar subcategoría "${oldTitle}" a:`, oldTitle);
+  if (newTitle === null) return;
+  const trimmed = newTitle.trim();
+  if (trimmed === oldTitle) return;
+
+  showLoading(`Renombrando "${oldTitle}" a "${trimmed}"...`);
+  
+  const { error } = await supabase
+    .from('products')
+    .update({ section_title: trimmed || null })
+    .eq('category_id', catId)
+    .eq('section_title', oldTitle);
+
+  hideLoading();
+  
+  if (error) {
+    toast('Error renombrando subcategoría', 'error');
+    console.error(error);
+    return;
+  }
+
+  toast('Subcategoría actualizada');
+  await loadProducts();
+};
 
 function populateCategorySelects() {
   const options = categories.map(c => `<option value="${c.id}">${esc(c.name)}</option>`).join('');
@@ -220,7 +274,22 @@ async function loadProducts() {
 
   if (error) { toast('Error cargando productos', 'error'); return; }
   products = data || [];
+  updateSectionsDatalist();
   renderProducts();
+  renderCategories(); // Update subcats in categories list
+}
+
+function updateSectionsDatalist() {
+  const datalist = document.getElementById('sections-list');
+  if (!datalist) return;
+  
+  // Get unique titles
+  const uniqueSections = [...new Set(products
+    .map(p => p.section_title)
+    .filter(t => t && t.trim() !== '')
+  )].sort();
+  
+  datalist.innerHTML = uniqueSections.map(s => `<option value="${s}">`).join('');
 }
 
 function renderProducts() {
@@ -281,6 +350,7 @@ function openProductModal(prod = null) {
   document.getElementById('product-modal-title').textContent = prod ? 'Editar Producto' : 'Nuevo Producto';
   document.getElementById('product-id').value = prod ? prod.id : '';
   document.getElementById('product-name').value = prod ? prod.name : '';
+  document.getElementById('product-section').value = prod ? (prod.section_title || '') : '';
   document.getElementById('product-desc').value = prod ? (prod.description || '') : '';
   document.getElementById('product-category').value = prod ? prod.category_id : '';
   document.getElementById('product-active').checked = prod ? prod.is_active : true;
@@ -388,6 +458,7 @@ async function handleProductSubmit(e) {
   e.preventDefault();
   const id = document.getElementById('product-id').value;
   const name = document.getElementById('product-name').value.trim();
+  const section_title = document.getElementById('product-section').value.trim();
   const description = document.getElementById('product-desc').value.trim();
   const category_id = document.getElementById('product-category').value;
   const is_active = document.getElementById('product-active').checked;
@@ -401,10 +472,10 @@ async function handleProductSubmit(e) {
 
     // 1. Upsert product
     if (id) {
-      const { error } = await supabase.from('products').update({ name, description, category_id, is_active }).eq('id', id);
+      const { error } = await supabase.from('products').update({ name, section_title, description, category_id, is_active }).eq('id', id);
       if (error) throw error;
     } else {
-      const { data, error } = await supabase.from('products').insert({ name, description, category_id, is_active, sort_order: products.length }).select().single();
+      const { data, error } = await supabase.from('products').insert({ name, section_title, description, category_id, is_active, sort_order: products.length }).select().single();
       if (error) throw error;
       productId = data.id;
     }

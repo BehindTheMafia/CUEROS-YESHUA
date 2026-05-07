@@ -4,9 +4,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Catálogo | Cuero's Yeshua</title>
+    <title>Catálogo Completo | Cueros Yeshua - Masaya, Nicaragua</title>
     <meta name="description"
-        content="Explore nuestra colección exclusiva de cueros nacionales e importados, hilos, hebillas y más en Masaya.">
+        content="Explora nuestro catálogo completo de cueros, hebillas e hilos. Encuentra todo lo necesario para marroquinería y calzado con la mejor calidad de Nicaragua.">
+    <link rel="canonical" href="https://cuerosyeshua.netlify.app/catalogo.html">
+    <meta property="og:title" content="Catálogo de Productos | Cueros Yeshua">
+    <meta property="og:description" content="Venta de cuero y suministros de alta calidad.">
+    <meta property="og:url" content="https://cuerosyeshua.netlify.app/catalogo.html">
+    <meta name="theme-color" content="#7A5230">
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -24,6 +29,24 @@
         tailwind.config = {
             theme: {
                 extend: {
+                    container: {
+                        center: true,
+                        padding: {
+                            DEFAULT: '1.5rem',
+                            sm: '2rem',
+                            lg: '4rem',
+                            xl: '5rem',
+                            '2xl': '6rem',
+                        },
+                        screens: {
+                            sm: '100%',
+                            md: '100%',
+                            lg: '1024px',
+                            xl: '1280px',
+                            '2xl': '1536px',
+                            '3xl': '1800px',
+                        },
+                    },
                     colors: {
                         leather: {
                             50: '#F9F6F0',
@@ -118,20 +141,25 @@
         .scroll-mask {
             position: relative;
         }
+        .can-scroll-right .scroll-mask::after {
+            opacity: 1;
+        }
         .scroll-mask::after {
             content: '';
             position: absolute;
             top: 0;
             right: 0;
             bottom: 0;
-            width: 60px;
+            width: 80px;
             background: linear-gradient(to right, transparent, #fffbf6);
             pointer-events: none;
             z-index: 1;
             transition: opacity 0.3s;
-        }
-        .scroll-mask.scrolled-right::after {
             opacity: 0;
+        }
+
+        .can-scroll-left .scroll-mask::before {
+            opacity: 1;
         }
         .scroll-mask::before {
             content: '';
@@ -139,24 +167,18 @@
             top: 0;
             left: 0;
             bottom: 0;
-            width: 60px;
+            width: 80px;
             background: linear-gradient(to left, transparent, #fffbf6);
             pointer-events: none;
             z-index: 1;
             opacity: 0;
             transition: opacity 0.3s;
         }
-        .scroll-mask.scrolled-left::before {
-            opacity: 1;
-        }
 
         /* Scroll Arrows */
         .scroll-arrow {
-            position: absolute;
-            top: 54%;
-            transform: translateY(-50%);
-            width: 36px;
-            height: 36px;
+            width: 32px;
+            height: 32px;
             background: white;
             color: #7A5230;
             border-radius: 50%;
@@ -164,35 +186,35 @@
             align-items: center;
             justify-content: center;
             z-index: 10;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.12);
-            border: 1px solid rgba(166,123,91,0.1);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            border: 1px solid rgba(166,123,91,0.15);
             transition: all 0.3s ease;
             cursor: pointer;
+            flex-shrink: 0;
             opacity: 0;
             pointer-events: none;
         }
-        .scroll-arrow:active { transform: translateY(-50%) scale(0.9); }
-        .arrow-left { left: -5px; }
-        .arrow-right { right: -5px; }
-
-        .scroll-mask.scrolled-left .arrow-left {
+        .scroll-arrow:active { transform: scale(0.9); }
+        
+        .can-scroll-left .arrow-left {
             opacity: 1;
             pointer-events: auto;
-            left: -12px;
         }
-        .scroll-mask:not(.scrolled-right) .arrow-right {
+        .can-scroll-right .arrow-right {
             opacity: 1;
             pointer-events: auto;
-            right: -12px;
         }
 
         .scroll-arrow:hover {
             background-color: #A67B5B;
             color: white;
-            transform: translateY(-50%) scale(1.1);
         }
 
         @media (min-width: 768px) {
+            .scroll-arrow {
+                width: 40px;
+                height: 40px;
+            }
             .sticky-filters { @apply shadow-none pt-0 -mx-0 px-0 relative top-0 bg-transparent; backdrop-filter: none; }
         }
     </style>
@@ -241,7 +263,7 @@
     <!-- Header Section -->
     <section class="relative pt-32 pb-12 md:pt-40 md:pb-20 bg-leather-950 overflow-hidden">
         <div class="absolute inset-0 bg-leather-pattern opacity-10 mix-blend-overlay"></div>
-        <div class="container mx-auto px-4 sm:px-6 md:px-12 relative z-10 text-center">
+        <div class="w-full px-6 md:px-16 lg:px-24 relative z-10 text-center">
             <h1 class="text-3xl sm:text-4xl md:text-6xl font-serif font-bold text-white mb-4 md:mb-6 reveal">Nuestro Catálogo</h1>
             <p class="text-leather-100 text-base sm:text-lg md:text-xl max-w-2xl mx-auto font-light reveal"
                 style="transition-delay: 100ms;">
@@ -252,25 +274,30 @@
 
     <!-- Catalog Grid -->
     <section class="py-10 md:py-20">
-        <div class="container mx-auto px-4 sm:px-6 md:px-12">
+        <div class="w-full px-6 md:px-16 lg:px-24">
 
             <!-- Dynamic Category Filters -->
             <div class="sticky-filters mb-8 md:mb-16 reveal" style="transition-delay: 200ms;">
-                <div class="max-w-4xl mx-auto relative px-6 md:px-10">
-                    <div class="scroll-mask">
-                        <button class="scroll-arrow arrow-left" aria-label="Deslizar izquierda">
-                            <i class="fa-solid fa-chevron-left text-xs"></i>
-                        </button>
-                        <button class="scroll-arrow arrow-right" aria-label="Deslizar derecha">
-                            <i class="fa-solid fa-chevron-right text-xs"></i>
-                        </button>
-                        <div id="category-filters" class="filters-scroll flex gap-2 sm:gap-4 overflow-x-auto pb-4 pt-1 px-8 no-scrollbar w-max mx-auto max-w-full">
+                <div id="filters-container" class="max-w-5xl mx-auto flex items-center gap-2 px-4">
+                    <!-- Left Arrow (outside scroll) -->
+                    <button class="scroll-arrow arrow-left" id="btn-left" aria-label="Deslizar izquierda">
+                        <i class="fa-solid fa-chevron-left text-xs"></i>
+                    </button>
+
+                    <!-- Scrollable Area -->
+                    <div class="scroll-mask flex-1 overflow-hidden">
+                        <div id="category-filters" class="filters-scroll flex gap-2 sm:gap-4 overflow-x-auto pb-4 pt-1 px-2 no-scrollbar w-max mx-auto max-w-full">
                             <!-- Filled by JS -->
                             <div class="skeleton w-20 h-10 rounded-full flex-shrink-0"></div>
                             <div class="skeleton w-28 h-10 rounded-full flex-shrink-0"></div>
                             <div class="skeleton w-24 h-10 rounded-full flex-shrink-0"></div>
                         </div>
                     </div>
+
+                    <!-- Right Arrow (outside scroll) -->
+                    <button class="scroll-arrow arrow-right" id="btn-right" aria-label="Deslizar derecha">
+                        <i class="fa-solid fa-chevron-right text-xs"></i>
+                    </button>
                 </div>
             </div>
 
@@ -310,7 +337,7 @@
 
     <!-- Footer -->
     <footer class="bg-leather-950 text-leather-100 py-12 border-t border-leather-900">
-        <div class="container mx-auto px-6 md:px-12 text-center">
+        <div class="w-full px-6 md:px-16 lg:px-24 text-center">
             <a href="index.html"
                 class="font-serif text-2xl font-bold tracking-wider inline-flex items-center gap-2 text-white mb-6">
                 <i class="fa-solid fa-layer-group text-leather-500"></i>
