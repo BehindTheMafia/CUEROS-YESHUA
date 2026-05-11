@@ -217,17 +217,129 @@
             }
             .sticky-filters { @apply shadow-none pt-0 -mx-0 px-0 relative top-0 bg-transparent; backdrop-filter: none; }
         }
+
+        /* ── SIDEBAR ── */
+        #category-sidebar {
+            position: sticky;
+            top: 5rem; /* Matches h-20 (80px) */
+            max-height: calc(100vh - 6rem);
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(166,123,91,0.25) transparent;
+        }
+        #category-sidebar::-webkit-scrollbar { width: 3px; }
+        #category-sidebar::-webkit-scrollbar-thumb {
+            background: rgba(166,123,91,0.25);
+            border-radius: 4px;
+        }
+        .sidebar-btn {
+            @apply w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all duration-200;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.5rem;
+            color: #7A5230;
+        }
+        .sidebar-btn:hover { background: rgba(242,235,225,0.7); }
+        .sidebar-btn.active {
+            @apply bg-leather-700 text-white shadow-sm;
+        }
+        .sidebar-btn .s-dot {
+            width: 6px; height: 6px; border-radius: 50%; background: #D4B895; flex-shrink: 0;
+        }
+        .sidebar-btn.active .s-dot { background: rgba(255,255,255,0.5); }
+        .sidebar-btn .s-count {
+            font-size: 11px; border-radius: 9999px; padding: 1px 6px;
+            background: #F2EBE1; color: #A67B5B; font-weight: 600; flex-shrink: 0;
+        }
+        .sidebar-btn.active .s-count { background: rgba(255,255,255,0.2); color: white; }
+
+        /* ── SEARCH ── */
+        #search-input { 
+            transition: all 0.3s ease; 
+        }
+        #search-input:focus {
+            outline: none; 
+            border-color: #A67B5B;
+            box-shadow: 0 4px 20px -5px rgba(166,123,91,0.25);
+            background-color: #ffffff;
+        }
+        /* Hide the native "X" clear button in search inputs */
+        #search-input::-webkit-search-cancel-button,
+        #search-input::-webkit-search-decoration,
+        #search-input::-webkit-search-results-button,
+        #search-input::-webkit-search-results-decoration {
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        /* ── MOBILE CATEGORY BUTTONS (sidebar style) ── */
+        .mob-cat-btn {
+            display: block;
+            width: 100%;
+            text-align: left;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+            color: rgba(255,255,255,0.7);
+            border: none;
+        }
+        .mob-cat-btn:hover {
+            background: rgba(255,255,255,0.08);
+            color: white;
+        }
+        .mob-cat-btn.active {
+            background: #7A5230;
+            color: white;
+        }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { scrollbar-width: none; }
+
+        /* ── MOBILE SIDEBAR ── */
+        #mobile-overlay {
+            position: fixed; inset: 0; z-index: 60;
+            background: rgba(0,0,0,0.5);
+            opacity: 0; pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        #mobile-overlay.active {
+            opacity: 1; pointer-events: auto;
+        }
+        #mobile-sidebar {
+            position: fixed; top: 0; right: 0; bottom: 0;
+            width: 280px; max-width: 85vw;
+            z-index: 70;
+            background: #2B1C0E;
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        #mobile-sidebar.open {
+            transform: translateX(0);
+        }
+
+        /* ── UTILITIES ── */
+        .header-spacing {
+            padding-top: 64px; /* Default h-16 */
+        }
+        @media (min-width: 768px) {
+            .header-spacing {
+                padding-top: 80px; /* md:h-20 */
+            }
+        }
     </style>
 </head>
 
 <body class="font-sans text-gray-800 bg-leather-50 antialiased selection:bg-leather-500 selection:text-white">
 
     <!-- Navbar -->
-    <nav id="navbar" class="fixed w-full z-50 transition-all duration-300 glass-nav py-4 text-white">
+    <nav id="navbar" class="fixed w-full z-50 transition-all duration-300 glass-nav h-16 md:h-20 flex items-center text-white">
         <div class="container mx-auto px-6 md:px-12 flex justify-between items-center">
             <a href="index.html"
                 class="font-serif text-2xl md:text-3xl font-bold tracking-wider flex items-center gap-2">
-                <i class=""></i>
                 CUEROS <span class="text-leather-300">YESHUA</span>
             </a>
 
@@ -246,22 +358,11 @@
             </button>
         </div>
 
-        <!-- Mobile Menu Panel -->
-        <div id="mobile-menu"
-            class="hidden md:hidden absolute top-full left-0 w-full bg-leather-950/95 border-t border-leather-900 flex-col items-center py-8 space-y-6 shadow-2xl backdrop-blur-lg">
-            <a href="index.html"
-                class="text-xl font-medium tracking-wide hover:text-leather-300 mobile-link transition-colors">Inicio</a>
-            <a href="index.html#nosotros"
-                class="text-xl font-medium tracking-wide hover:text-leather-300 mobile-link transition-colors">Nosotros</a>
-            <a href="catalogo.html"
-                class="text-xl font-medium tracking-wide text-leather-300 mobile-link transition-colors">Catálogo</a>
-            <a href="index.html#contacto"
-                class="text-xl font-medium tracking-wide hover:text-leather-300 mobile-link transition-colors">Contacto</a>
-        </div>
+        <!-- Mobile Menu is now a sidebar, rendered outside <nav> -->
     </nav>
 
     <!-- Header Section -->
-    <section class="relative pt-32 pb-12 md:pt-40 md:pb-20 bg-leather-950 overflow-hidden">
+    <section class="relative pt-32 pb-12 md:pt-48 md:pb-20 bg-leather-950 overflow-hidden">
         <div class="absolute inset-0 bg-leather-pattern opacity-10 mix-blend-overlay"></div>
         <div class="w-full px-6 md:px-16 lg:px-24 relative z-10 text-center">
             <h1 class="text-3xl sm:text-4xl md:text-6xl font-serif font-bold text-white mb-4 md:mb-6 reveal">Nuestro Catálogo</h1>
@@ -276,59 +377,80 @@
     <section class="py-10 md:py-20">
         <div class="w-full px-6 md:px-16 lg:px-24">
 
-            <!-- Dynamic Category Filters -->
-            <div class="sticky-filters mb-8 md:mb-16 reveal" style="transition-delay: 200ms;">
-                <div id="filters-container" class="max-w-5xl mx-auto flex items-center gap-2 px-4">
-                    <!-- Left Arrow (outside scroll) -->
-                    <button class="scroll-arrow arrow-left" id="btn-left" aria-label="Deslizar izquierda">
-                        <i class="fa-solid fa-chevron-left text-xs"></i>
-                    </button>
+            <!-- Layout: Sidebar + Products -->
+            <div class="flex gap-8 items-start">
 
-                    <!-- Scrollable Area -->
-                    <div class="scroll-mask flex-1 overflow-hidden">
-                        <div id="category-filters" class="filters-scroll flex gap-2 sm:gap-4 overflow-x-auto pb-4 pt-1 px-2 no-scrollbar w-max mx-auto max-w-full">
-                            <!-- Filled by JS -->
-                            <div class="skeleton w-20 h-10 rounded-full flex-shrink-0"></div>
-                            <div class="skeleton w-28 h-10 rounded-full flex-shrink-0"></div>
-                            <div class="skeleton w-24 h-10 rounded-full flex-shrink-0"></div>
+                <!-- LEFT SIDEBAR (desktop only) -->
+                <aside id="category-sidebar" class="hidden md:block w-56 lg:w-60 flex-shrink-0">
+                    <div class="bg-white rounded-2xl border border-leather-100 p-3 shadow-sm">
+                        <p class="text-[10px] uppercase tracking-widest text-leather-400 font-semibold px-2 pt-1 pb-2">
+                            <i class="fa-solid fa-layer-group mr-1"></i>Categorías
+                        </p>
+                        <nav id="sidebar-filters" class="space-y-0.5">
+                            <div class="space-y-1 px-1">
+                                <div class="skeleton h-9 w-full rounded-xl"></div>
+                                <div class="skeleton h-9 w-4/5 rounded-xl"></div>
+                                <div class="skeleton h-9 w-full rounded-xl"></div>
+                                <div class="skeleton h-9 w-3/4 rounded-xl"></div>
+                            </div>
+                        </nav>
+                    </div>
+                </aside>
+
+                <!-- PRODUCTS COLUMN -->
+                <div class="flex-1 min-w-0">
+                    <!-- Search Bar (Sticky, responsive spacing and alignment) -->
+                    <div class="sticky top-16 md:top-20 z-40 bg-leather-50/95 backdrop-blur-md pt-4 md:pt-0 pb-4 md:pb-6 mb-2 reveal" style="transition-delay: 150ms;">
+                        <div class="relative group">
+                            <!-- Premium animated background/border shadow container -->
+                            <div class="absolute -inset-0.5 bg-gradient-to-r from-leather-200 to-leather-300 rounded-2xl opacity-0 group-hover:opacity-40 transition duration-500 blur-sm pointer-events-none"></div>
+                            
+                            <div class="relative flex items-center bg-white rounded-xl shadow-sm border border-leather-100 overflow-hidden focus-within:border-leather-500 transition-colors duration-300">
+                                <span class="pl-5 text-leather-400">
+                                    <i class="fa-solid fa-magnifying-glass text-sm"></i>
+                                </span>
+                                <input id="search-input" type="search" placeholder="Buscar productos por nombre o descripción..." autocomplete="off"
+                                    class="w-full pl-3 pr-12 py-3.5 bg-transparent text-gray-800 placeholder-gray-400 text-sm md:text-base border-none focus:ring-0 outline-none">
+                                
+                                <button id="search-clear" class="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center rounded-full bg-leather-50 text-leather-500 hover:bg-leather-200 hover:text-leather-900 opacity-0 pointer-events-none transition-all duration-300 scale-90" aria-label="Limpiar búsqueda">
+                                    <i class="fa-solid fa-xmark text-sm"></i>
+                                </button>
+                            </div>
                         </div>
                     </div>
+                    <!-- Results count -->
+                    <p id="results-count" class="text-xs font-medium text-leather-500 mb-3" style="display:none"></p>
 
-                    <!-- Right Arrow (outside scroll) -->
-                    <button class="scroll-arrow arrow-right" id="btn-right" aria-label="Deslizar derecha">
-                        <i class="fa-solid fa-chevron-right text-xs"></i>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Dynamic Products Grid -->
-            <div id="products-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-10">
-                <!-- Loading skeletons -->
-                <div class="product-card reveal active">
-                    <div class="skeleton h-72 w-full"></div>
-                    <div class="p-8 space-y-3">
-                        <div class="skeleton h-6 w-3/4"></div>
-                        <div class="skeleton h-4 w-full"></div>
-                        <div class="skeleton h-4 w-2/3"></div>
-                        <div class="skeleton h-10 w-full mt-4"></div>
-                    </div>
-                </div>
-                <div class="product-card reveal active">
-                    <div class="skeleton h-72 w-full"></div>
-                    <div class="p-8 space-y-3">
-                        <div class="skeleton h-6 w-3/4"></div>
-                        <div class="skeleton h-4 w-full"></div>
-                        <div class="skeleton h-4 w-2/3"></div>
-                        <div class="skeleton h-10 w-full mt-4"></div>
-                    </div>
-                </div>
-                <div class="product-card reveal active">
-                    <div class="skeleton h-72 w-full"></div>
-                    <div class="p-8 space-y-3">
-                        <div class="skeleton h-6 w-3/4"></div>
-                        <div class="skeleton h-4 w-full"></div>
-                        <div class="skeleton h-4 w-2/3"></div>
-                        <div class="skeleton h-10 w-full mt-4"></div>
+                    <!-- Dynamic Products Grid -->
+                    <div id="products-grid" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
+                        <!-- Loading skeletons -->
+                        <div class="product-card reveal active">
+                            <div class="skeleton h-72 w-full"></div>
+                            <div class="p-8 space-y-3">
+                                <div class="skeleton h-6 w-3/4"></div>
+                                <div class="skeleton h-4 w-full"></div>
+                                <div class="skeleton h-4 w-2/3"></div>
+                                <div class="skeleton h-10 w-full mt-4"></div>
+                            </div>
+                        </div>
+                        <div class="product-card reveal active">
+                            <div class="skeleton h-72 w-full"></div>
+                            <div class="p-8 space-y-3">
+                                <div class="skeleton h-6 w-3/4"></div>
+                                <div class="skeleton h-4 w-full"></div>
+                                <div class="skeleton h-4 w-2/3"></div>
+                                <div class="skeleton h-10 w-full mt-4"></div>
+                            </div>
+                        </div>
+                        <div class="product-card reveal active">
+                            <div class="skeleton h-72 w-full"></div>
+                            <div class="p-8 space-y-3">
+                                <div class="skeleton h-6 w-3/4"></div>
+                                <div class="skeleton h-4 w-full"></div>
+                                <div class="skeleton h-4 w-2/3"></div>
+                                <div class="skeleton h-10 w-full mt-4"></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -346,38 +468,78 @@
             <p class="text-sm text-leather-100/60 mb-8 max-w-md mx-auto">Calidad superior en cueros y materiales para el artesano
                 profesional.</p>
             <div class="flex justify-center space-x-6 mb-12">
-                <a href="#"
-                    class="w-10 h-10 rounded-full bg-leather-900 flex items-center justify-center hover:bg-leather-500 hover:text-white transition-colors">
-                    <i class="fa-brands fa-facebook-f"></i>
-                </a>
-                <a href="https://wa.me/50584449281" target="_blank"
-                    class="w-10 h-10 rounded-full bg-leather-900 flex items-center justify-center hover:bg-leather-500 hover:text-white transition-colors">
-                    <i class="fa-brands fa-whatsapp"></i>
-                </a>
             </div>
             <p class="text-xs text-leather-100/30">&copy; <script>document.write(new Date().getFullYear())</script> Cuero's Yeshua. Todos los derechos reservados.</p>
         </div>
     </footer>
 
-    <!-- Mobile Menu Script (non-module) -->
+    <!-- Mobile Sidebar (off-canvas, right side) -->
+    <div id="mobile-overlay" class="md:hidden"></div>
+    <aside id="mobile-sidebar" class="md:hidden text-white">
+        <!-- Close button -->
+        <div class="flex items-center justify-between px-5 pt-5 pb-3">
+            <button id="mobile-close-btn" class="text-2xl hover:text-leather-300 transition-colors" aria-label="Cerrar menú">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <!-- Nav links -->
+        <nav class="flex flex-col px-5 py-4 space-y-1 border-b border-leather-900/50">
+            <a href="index.html" class="px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors text-base font-medium">Inicio</a>
+            <a href="index.html#nosotros" class="px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors text-base font-medium">Nosotros</a>
+            <a href="catalogo.html" class="px-3 py-2.5 rounded-lg bg-leather-700/40 text-leather-300 text-base font-medium">Catálogo</a>
+            <a href="index.html#contacto" class="px-3 py-2.5 rounded-lg hover:bg-white/10 transition-colors text-base font-medium">Contacto</a>
+        </nav>
+
+        <!-- Categories -->
+        <div class="px-5 py-5">
+            <p class="text-xs uppercase tracking-widest text-leather-500 font-semibold mb-3">
+                <i class="fa-solid fa-layer-group mr-1"></i>Categorías
+            </p>
+            <div id="mobile-category-filters" class="flex flex-col gap-1">
+                <!-- Filled by JS -->
+            </div>
+        </div>
+    </aside>
+
+    <!-- Mobile + Navbar Script -->
     <script>
-        // Mobile Menu
+        // Mobile sidebar toggle
         const mobileBtn = document.getElementById('mobile-menu-btn');
-        const mobileMenu = document.getElementById('mobile-menu');
+        const mobileSidebar = document.getElementById('mobile-sidebar');
+        const mobileOverlay = document.getElementById('mobile-overlay');
+        const mobileCloseBtn = document.getElementById('mobile-close-btn');
         const icon = document.getElementById('menu-icon');
 
+        function openMobileSidebar() {
+            mobileSidebar.classList.add('open');
+            mobileOverlay.classList.add('active');
+            icon.classList.replace('fa-bars', 'fa-xmark');
+            document.body.style.overflow = 'hidden';
+        }
+        function closeMobileSidebar() {
+            mobileSidebar.classList.remove('open');
+            mobileOverlay.classList.remove('active');
+            icon.classList.replace('fa-xmark', 'fa-bars');
+            document.body.style.overflow = '';
+        }
+
         mobileBtn.addEventListener('click', () => {
-            const isOpening = mobileMenu.classList.contains('hidden');
-            mobileMenu.classList.toggle('hidden');
-            mobileMenu.classList.toggle('flex');
-            if (isOpening) {
-                icon.classList.replace('fa-bars', 'fa-xmark');
+            if (mobileSidebar.classList.contains('open')) {
+                closeMobileSidebar();
             } else {
-                icon.classList.replace('fa-xmark', 'fa-bars');
+                openMobileSidebar();
             }
         });
+        mobileCloseBtn.addEventListener('click', closeMobileSidebar);
+        mobileOverlay.addEventListener('click', closeMobileSidebar);
 
-        // Navbar scroll
+        // Close on nav link click
+        mobileSidebar.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', closeMobileSidebar);
+        });
+
+        // Navbar scroll shadow
         window.addEventListener('scroll', () => {
             const nav = document.getElementById('navbar');
             if (window.scrollY > 50) {
